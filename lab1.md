@@ -22,13 +22,17 @@
 
 ### 2.1.3. Используя параметры, приведённые в таблице ниже, настройте сеть, дополнив необходимые конфигурационные файлы
 
-![alt text](image-1.png)
+|Machine name        | Server         | Client         |
+|-                   |:-:             |:-:             |
+|**Host name**       | kmsserver      | kmsclient      |
+|**IP address**      | 192.168.122.14 | 192.168.122.15 |
+|**Default gateway** |         192.168.122.1           |
 
 `sudo nano /etc/hostname` - меняем имя пользователя и перезапускаем
 
 `sudo nano /etc/network/interfaces`
 
-![alt text](image-2.png)
+![alt text](.pic/image-2.png)
 
 Перезагружаем интерфейс
 
@@ -38,7 +42,7 @@
 
 В файле `/etc/hosts` нужно указать сопоставление ip адреса и доменного имени, чтобы ping знал по какому адресу стучаться если используем доменное имя для подключения. И на клиенте и на сервере.
 
-![alt text](image.png)
+![alt text](.pic/image.png)
 
 ## Задание 2
 
@@ -109,7 +113,7 @@ get /remote/path/to/file /local/path/to/file
 
 `sudo nano /etc/samba/smb.conf`
 
-![alt text](image-3.png)
+![alt text](.pic/image-3.png)
 
 `testparm`
 
@@ -130,7 +134,7 @@ get /remote/path/to/file /local/path/to/file
 
 ### 2.2.4. На Client, используя графический интерфейс, поменяйте дату и время на 01.01.1970 и 18:12. Синхронизируйте время Server и Client по сети, установив NTP-сервер на машину Server
 
-![alt text](image-4.png)
+![alt text](.pic/image-4.png)
 
 На сервере:
 
@@ -144,7 +148,7 @@ get /remote/path/to/file /local/path/to/file
 
 `sudo nano /etc/ntp.com`
 
-![alt text](image-5.png)
+![alt text](.pic/image-5.png)
 
 - server - указывает, к какому серверу необходмо подключиться для получения точного времени.
 - 127.127.1.0 - адрес, по которому сервер получает своё системное время, которое будет отправляться по запросу клиенту
@@ -156,7 +160,7 @@ get /remote/path/to/file /local/path/to/file
 
 `sudo ntpdate kmsserver` - должно после этого обновиться время
 
-![alt text](image-6.png)
+![alt text](.pic/image-6.png)
 
 ## Задание 3
 
