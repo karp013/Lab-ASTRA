@@ -130,3 +130,13 @@ get /remote/path/to/file /local/path/to/file
 
 ### 2.2.4. На Client, используя графический интерфейс, поменяйте дату и время на 01.01.1970 и 18:12. Синхронизируйте время Server и Client по сети, установив NTP-сервер на машину Server
 
+![alt text](image-4.png)
+
+На сервере:
+
+`sudo apt install ntp`
+
+На всякий пожарный сделаем копию конфигурационного файла для ntp
+
+`sudo cp /etc/ntp.conf /etc/ntp.conf.orig`
+
