@@ -62,21 +62,27 @@
 В конфигурационном файле `/etc/vsftpd.conf` нужно изменить
 настройки для использования ipv4 вместо ipv6 и разрешить использование анонимного доступа. Это нужно, чтобы можно было работать с репозиторием.
 
-`listen=YES`
-
-`listen_ipv6=NO`
-
-`anonymous_enable=YES`
+```bash
+listen=YES
+listen_ipv6=NO
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+```
 
 Перезапускаем службу
 
 `systemctl restart vsftpd`
 
+`sudo apt install ftp`
+
 На клиенте:
+
+`sudo apt install ftp`
 
 `nano fio.txt`
 
-`sftp adminstd@kmsserver`
+`ftp adminstd@kmsserver`
 
 <details>
   <summary>Загрузка файла с локальной машины на удаленный сервер:</summary>
@@ -206,6 +212,10 @@ server 127.127.1.0 prefer
 
 На клиенте:
 
+`ssh-keygen` - генерируем ключи
+
+`ssh-copy-id adminstd@kmserver` - закидываем ключ клиенту
+
 `ssh adminstd@kmsserver` - подключаемся к серверу
 
 ### 2.3.3. Подключитесь к серверу с машины клиента и создайте в директории /home/study файл с содержимым «Hello world!»
@@ -229,10 +239,6 @@ server 127.127.1.0 prefer
 Она может состоять из разлиных вычислительных устройств - компьютеров, серверов, маршрутизаторов, принтеров и тд.
 
 ### 2. Из каких уровней состоит модель OSI? Для чего её создали?
-
-1. Физический уровень (кабели, разъемы)
-2. Канальный уровень (MAC-адреса, Ethernet, коммутаторы, мосты, кадры)
-3. Сетевой уровень (IP-адресация, маршрутизаци)
 
 #### 1. Физический уровень (Physical Layer)
 
