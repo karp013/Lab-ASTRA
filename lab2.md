@@ -4,7 +4,7 @@
 
 ### 1. На обе виртуальные машины установите пакет bind9
 
-sudo apt install bind9
+`sudo apt install bind9`
 
 ### 2. На server машине проделайте следующие шаги:
 
@@ -15,7 +15,7 @@ sudo apt install bind9
 
 `adminstd@kmsserver:~$ sudo nano /etc/bind/named.conf.local`
 
-```bash 
+```bash
 zone "kms.miet.stu" {
         type master;
         file "/etc/bind/zones/db.kms.miet.stu";
@@ -52,7 +52,6 @@ cli.kms.miet.stu.       IN      A       192.168.122.14
 neighbor                IN      CNAME   cli.kms.miet.stu.
 ```
 
-
 /etc/bind/zones/192.168.122
 
 ```bash
@@ -72,17 +71,18 @@ $TTL 604800
 
 #### Проверьте правильность внесенных изменений
 
-adminstd@kmsserver:/etc/bind/zones$ `sudo named-checkconf /etc/bind/named.conf`
+`adminstd@kmsserver:/etc/bind/zones$ sudo named-checkconf /etc/bind/named.conf`
 
-adminstd@kmsserver:/etc/bind/zones$ `sudo named-checkzone kms.miet.stu /etc/bind/zones/db.kms.miet.stu`
+`adminstd@kmsserver:/etc/bind/zones$ sudo named-checkzone kms.miet.stu /etc/bind/zones/db.kms.miet.stu`
 
-adminstd@kmsserver:/etc/bind/zones$ `sudo named-checkzone 122.168.192.in-addr.arpa /etc/bind/zones/192.168.122`
+`adminstd@kmsserver:/etc/bind/zones$ sudo named-checkzone 122.168.192.in-addr.arpa /etc/bind/zones/192.168.122`
 
 `systemctl restart bind9`
 
 #### Создайте каталог /etc/bind/zones. В нем создайне файлы с ресурсными записями для созданных вами зон. Включите в данную зону три машины - две созданные вами (server, client) и еще одну с именем client_2 и адресом  192.168.122.(№ в группе + 3)
 
 /etc/bind/zones/db.kms.miet.stu
+
 ```bash
 $TTL 604800
 kms.miet.stu.   IN      SOA srv.kms.miet.stu. karpukhin235@gmail.com (
@@ -103,6 +103,7 @@ client2                 IN      CNAME   cli2.kms.miet.stu.
 ```
 
 /etc/bind/zones/192.168.122
+
 ```bash
 $TTL 604800
 122.168.192.in-addr.arpa.       IN      SOA srv.kms.miet.stu. karpukhin235@gmail.com (
@@ -121,11 +122,11 @@ $TTL 604800
 
 #### Проверьте правльиность внесенных изменений
 
-adminstd@kmsserver:/etc/bind/zones$ `sudo named-checkconf /etc/bind/named.conf`
+`adminstd@kmsserver:/etc/bind/zones$ sudo named-checkconf /etc/bind/named.conf`
 
-adminstd@kmsserver:/etc/bind/zones$ `sudo named-checkzone kms.miet.stu /etc/bind/zones/db.kms.miet.stu`
+`adminstd@kmsserver:/etc/bind/zones$ sudo named-checkzone kms.miet.stu /etc/bind/zones/db.kms.miet.stu`
 
-adminstd@kmsserver:/etc/bind/zones$ `sudo named-checkzone 122.168.192.in-addr.arpa /etc/bind/zones/192.168.122`
+`adminstd@kmsserver:/etc/bind/zones$ sudo named-checkzone 122.168.192.in-addr.arpa /etc/bind/zones/192.168.122`
 
 #### Перезапустите bind9 и поочередно отправьте ping сообщение машинам с именами server, client, clietn_2, client_3. Объясните полученный результат
 
@@ -143,8 +144,6 @@ domain kms.miet.stu
 ```
 
 ping клиента 1 и сервера работает, ping client2 не работает, потому что у нас нет такой машины
-
-
 
 ## Задание 2
 
@@ -176,7 +175,6 @@ range 192.168.122.92 192.168.122.112;
 
 `sudo dhcpd -t` - проверка что синтаксис правильный
 
-
 ### 3. Запустите службу DHCP и убедитесь, что она работает корректно
 
 на сервере:
@@ -203,11 +201,11 @@ range 192.168.122.92 192.168.122.112;
 
 рядом с link/ether будет написан mac адрес
 
-![alt text](image-1.png)
+![alt text](.pic/image-1.png)
 
 на сервере:
 
-/etc/dhcp/dhcpd.conf 
+/etc/dhcp/dhcpd.conf
 
 добавляем в конце
 
@@ -217,9 +215,3 @@ host static-client {
     fixed-address 192.168.122.21;         # Статический IP-адрес
 }
 ```
-
-
-
-
-
-
