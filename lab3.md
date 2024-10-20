@@ -229,8 +229,6 @@ adminstd@kmsserver ~ $ `sudo ufw enable`
 
 Если выключить ufw и проверить можно ли подключиться через sftp то по идее должно подключаться
 
-![alt text](.pic/image.png)
-
 Когда включим ufw и пропишем это 
 
 adminstd@kmsserver ~ $ `sudo ufw deny 22/tcp`
@@ -258,8 +256,6 @@ Anywhere                   ALLOW       192.168.122.14
 ```
 
 adminstd@kmsclient ~ $ `sftp server`
-
-![alt text](.pic/image.png)
 
 
 ### Проверье подключение к серверу по протоколам sftp и ftp.
