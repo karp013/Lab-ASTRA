@@ -30,7 +30,7 @@ adminstd@kmsserver ~ $ `sudo touch /var/www/site/mydoc.html`
 
 <details><summary>тык</summary>
 
-```html
+```bash
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -255,9 +255,7 @@ Anywhere                   ALLOW       192.168.122.14
 
 ### Проверье подключение к серверу по протоколам sftp и ftp.
 
-По sftp: `sftp adminstd@pdvserver`
 
-По ftp: `ftp pdvserver`
 
 ### Удалите правило (не используя reset), запрещающее работу sftp, проверьте подключениею
 
