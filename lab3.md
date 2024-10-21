@@ -253,6 +253,9 @@ Anywhere                   ALLOW       192.168.122.14
 22/tcp (v6)                ALLOW       Anywhere (v6)   
 ```
 
+adminstd@kmsclient ~ $ `sftp server`
+
+
 ### Проверье подключение к серверу по протоколам sftp и ftp.
 
 
