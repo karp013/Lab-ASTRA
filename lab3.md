@@ -274,9 +274,7 @@ Status: active
      --                         ------      ----
 [ 1] 22/tcp                     DENY IN     Anywhere                  
 [ 2] Anywhere                   ALLOW IN    192.168.122.14            
-[ 3] 21/tcp                     ALLOW IN    Anywhere                  
-[ 4] 22/tcp (v6)                DENY IN     Anywhere (v6)             
-[ 5] 21/tcp (v6)                ALLOW IN    Anywhere (v6)   
+[ 3] 22/tcp (v6)                DENY IN     Anywhere (v6)             
 ```
 
 adminstd@kmsserver ~ $ `sudo ufw delete 1`
@@ -295,12 +293,10 @@ Status: active
      To                         Action      From
      --                         ------      ----
 [ 1] Anywhere                   ALLOW IN    192.168.122.14            
-[ 2] 21/tcp                     ALLOW IN    Anywhere                  
-[ 3] 22/tcp (v6)                DENY IN     Anywhere (v6)             
-[ 4] 21/tcp (v6)                ALLOW IN    Anywhere (v6)  
+[ 2] 22/tcp (v6)                DENY IN     Anywhere (v6)             
 ```
 
-adminstd@kmsserver ~ $ `sudo ufw delete 3`
+adminstd@kmsserver ~ $ `sudo ufw delete 2`
 
 ```bash
 Deleting:
@@ -317,8 +313,6 @@ Status: active
      To                         Action      From
      --                         ------      ----
 [ 1] Anywhere                   ALLOW IN    192.168.122.14            
-[ 2] 21/tcp                     ALLOW IN    Anywhere                  
-[ 3] 21/tcp (v6)                ALLOW IN    Anywhere (v6)  
 ```
 
 ### Выключите межсетевой экран
