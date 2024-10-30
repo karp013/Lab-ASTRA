@@ -112,15 +112,7 @@ adminstd@kmsserver ~ $ `sn /etc/resolv.conf`
 ```
 </details>
 
-adminstd@kmsclient ~ $ `sn /etc/resolv.conf`
-
-<details><summary>тык</summary>
-
-```bash
-nameserver 192.168.122.13
-domain     kms.miet.stu
-```
-</details>
+8.8.8.8 - это адрес днс сервера гугла. Из-за багов в астре нужно его прописать, чтобы работал выход в интернет
 
 adminstd@kmsserver ~ $ `sn /etc/bind/named.conf.local` 
 

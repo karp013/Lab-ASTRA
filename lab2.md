@@ -27,13 +27,12 @@ zone "122.168.192.in-addr.arpa" {
 };
 ```
 
-`adminstd@kmsserver:~$ cd /etc/bind/`
 
-`adminstd@kmsserver:/etc/bind$ mkdir zones`
+`adminstd@kmsserver:$ sudo mkdir etc/bind/zones`
 
-`adminstd@kmsserver:/etc/bind/zones$ sudo touch /etc/bind/zones/db.kms.miet.stu`
+`adminstd@kmsserver:$ sudo touch /etc/bind/zones/db.kms.miet.stu`
 
-`adminstd@kmsserver:/etc/bind/zones$ sudo nano db.kms.miet.stu`
+`adminstd@kmsserver:$ sudo nano /etc/bind/zones/db.kms.miet.stu`
 
 /etc/bind/zones/db.kms.miet.stu
 
