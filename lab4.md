@@ -48,33 +48,46 @@ kmsmailclient@kmsserver:~$ `chmod 700 Mailbox`
 
 ### Настройте сервер postfix. В параметрах укажите значения mynetworks для вышей сети, mydestination, в параметре home_mailbox укажите адрес созданных почтовых ящиков. После указанных параметров укажите значение smtpd_relay_restrictions (см. ниже). Без него письма будут блокированы. 
 
-Комменнтим все остальное
 
 adminstd@kmsserver ~ $ `sn /etc/postfix/main.cf`
+
+Комменнтим все остальное
 
 ```bash
 mynetworks = 192.168.122.0/24
 mydestination = $myhostname, localhost, kms.miet.stu
-home_mailbox = ~/Mailbox/
+home_mailbox = Mailbox/
 smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenicated, reject_unauth_destination
 ```
-
-После настройки перезагрузите службу
 
 adminstd@kmsserver ~ $ `stl restart postfix`
 
 
 ### Настройте сервер dovecot в соответствии с указаниями выше. После настройки перезапустите службу.
 
-Комментим всё остальное 
 
-/etc/dovecot/conf.d/10-auth.conf
+adminstd@kmsserver ~ $ `sn /etc/dovecot/conf.d/10-auth.conf`
+
+Следующие строки лучше не добавлять снизу, а менять уже существующие параметры, чтобы сохранить порядок (на самом деле не проверялось, влияет порядок или нет, но на всякий случай лучше его сохранить)
+
+Далее комментим всё остальное кроме строки `!include auth-system.conf.ext`
+
 ```bash
 disable_plaintext_auth = no
 auth_mechanisms = plain login
 ```
 
-Комментим всё остальное 
+Комментим всё остальное кроме
+
+```bash
+namespace inbox {
+  ...
+  inbox = yes
+  ...
+}
+```
+
+И как в прошлом случае, лучше не добавлять строку внизу, а изменить существующий параметр
 
 adminstd@kmsserver ~ $ `sn /etc/dovecot/conf.d/10-mail.conf` 
 ```bash
@@ -94,15 +107,41 @@ adminstd@kmsserver ~ $ `thunderbird`
 
 ![alt text](.pic/image-10.png)
 
-# И УБЕЖДАЕМСЯ ЧТО НИХРЕНА НЕ РАБОТАЕТ
+Команды для отладки на всякий случай:
 
-## надоело
+`sudo tail -f /var/log/mail.log`
+
+`sudo systemctl status dovecot`
+
+`sudo systemctl status postfix`
+
+`sudo postfix check`
+
+`sudo journalctl -f`
+
+Вот еще одна команда, хз что она делает, вроде это специфика астры, но пусть будет тут (это уже не для отладки)
+
+`sudo pdpl-user kmsmailserver -i 63`
+
+
 
 ### Отправьте любое письмо с сервера на сервер.
 
+Вот тут я на новую версию астры перешел, поэтому скрины бутут чуть поприятнее
 
+![alt text](image.png)
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
 
 ### Запустите Thunderbird на машине клиента и зарегистрируйте клиента. Отправьте письмо с клиента на сервер и с сервера на клиент. 
+
+![alt text](image-1.png)
+
+![alt text](image-5.png)
+
+
 
 ## Задание 3
 
