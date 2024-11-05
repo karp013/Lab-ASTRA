@@ -129,17 +129,17 @@ adminstd@kmsserver ~ $ `thunderbird`
 
 Вот тут я на новую версию астры перешел, поэтому скрины бутут чуть поприятнее
 
-![alt text](image.png)
+![alt text](.pic/image-14.png)
 
-![alt text](image-2.png)
+![alt text](.pic/image-15.png)
 
-![alt text](image-3.png)
+![alt text](.pic/image-16.png)
 
 ### Запустите Thunderbird на машине клиента и зарегистрируйте клиента. Отправьте письмо с клиента на сервер и с сервера на клиент. 
 
-![alt text](image-1.png)
+![alt text](.pic/image-17.png)
 
-![alt text](image-5.png)
+![alt text](.pic/image-18.png)
 
 
 
@@ -147,4 +147,85 @@ adminstd@kmsserver ~ $ `thunderbird`
 
 ### Создайте почту yandex.ru и отправьте любое сообщение на неё от сервера и клиента
 
-### Создайте пароль для доступа с локального сервера на созданную почту яндекс. Для этого переходим на сайт https://id.yandex.ru/, в раздел "Безопасность":
+![alt text](.pic/image-11.png)
+
+![alt text](.pic/image-12.png)
+
+![alt text](.pic/image-13.png)
+
+В main.cf добавляем
+
+adminstd@kmsserver ~ $ sn /etc/postfix/main.cf
+
+```bash
+smtp_use_tls = yes
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_generic_maps = hash:/etc/postfix/generic
+smtp_tls_CAfile = /etc/ssl/certs/Entrust_Root_Certification_Authority.pem
+smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache
+smtp_tls_session_cache_timeout = 600s
+smtp_tls_wrappermode = yes
+smtp_sasl_security_options = noanonymous
+smtp_tls_security_level = encrypt
+smtp_tls_loglevel = 1
+
+relayhost = smtp.yandex.ru:465
+```
+
+
+Создаем вот такие файлы
+
+adminstd@kmsserver ~ $ sn /etc/postfix/generic
+
+```bash
+kmsmailserver@kms.miet.stu karpukhin235@yandex.ru
+kmsmailclient@kms.miet.stu karpukhin235@yandex.ru
+```
+
+adminstd@kmsserver ~ $ sn /etc/postfix/sasl_passwd
+```bash
+smtp.yandex.ru karpukhin235@yandex.ru:rcobiickdswuqhlr
+```
+
+adminstd@kmsserver ~ $ sudo postmap /etc/postfix/generic 
+
+adminstd@kmsserver ~ $ sudo postmap /etc/postfix/sasl_passwd 
+
+## Контрольные вопросы
+
+### 1. Для чего необходимы почтовые сервера?
+Почтовые серверы необходимы для отправки, получения и хранения электронной почты. Они обеспечивают обмен сообщениями между пользователями и другими серверами, управляют очередями сообщений и обеспечивают защиту и хранение данных. Основные типы почтовых серверов включают:
+- **SMTP-серверы** — для отправки почты.
+- **POP3/IMAP-серверы** — для получения почты.
+
+### 2. Как происходит процесс передачи почты?
+Процесс передачи почты включает следующие этапы:
+1. Пользователь создает сообщение в почтовом клиенте.
+2. Клиент отправляет сообщение на SMTP-сервер, который отвечает за отправку почты.
+3. SMTP-сервер проверяет адрес получателя и определяет, какой сервер (MX-сервер) должен получить сообщение.
+4. Сообщение передается от SMTP-сервера к MX-серверу получателя через Интернет.
+5. После получения почты MX-сервер помещает ее в почтовый ящик получателя.
+6. Получатель может получить сообщение через почтовый клиент, используя IMAP или POP3.
+
+### 3. Для чего необходим компонент MDA?
+MDA (Mail Delivery Agent) отвечает за доставку электронной почты в почтовые ящики пользователей на сервере. Он принимает сообщения от MTA (Mail Transfer Agent, то есть SMTP-сервера) и размещает их в соответствующих почтовых ящиках, что позволяет пользователям затем получить доступ к своим сообщениям.
+
+### 4. Как работает протокол SMTP?
+Протокол SMTP (Simple Mail Transfer Protocol) работает по принципу клиент-сервер. Основные этапы работы:
+1. Клиент подключается к SMTP-серверу.
+2. Клиент отправляет команды, такие как:
+   - `HELO` (или `EHLO`)
+   - `MAIL FROM` (от кого)
+   - `RCPT TO` (кому)
+   - `DATA` (содержимое сообщения)
+3. Сервер обрабатывает команды и подтверждает их.
+4. Если адрес получателя действителен, сервер отправляет сообщение дальше или сохраняет его для дальнейшей отправки.
+5. Сервер закрывает соединение, когда все сообщения отправлены.
+
+### 5. В чем отличие протоколов IMAP и POP3?
+IMAP (Internet Message Access Protocol) и POP3 (Post Office Protocol 3) — это протоколы для получения электронной почты, но они работают по-разному:
+- **IMAP**: Позволяет пользователям работать с сообщениями на сервере. Все сообщения остаются на сервере, и пользователи могут организовывать их в папки, отмечать прочитанными и т. д. IMAP поддерживает синхронизацию, что позволяет доступ к одной и той же почте с разных устройств.
+- **POP3**: Загружает сообщения с сервера на устройство пользователя и обычно удаляет их с сервера. Это означает, что после загрузки почты на одном устройстве, доступ к этим сообщениям с других устройств может быть невозможен, если не настроено иное.
+
+Эти протоколы выбираются в зависимости от потребностей пользователя в доступе к электронной почте.

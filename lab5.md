@@ -27,13 +27,13 @@ server
 
 adminstd@kmsserver ~ $ `ansible -m ping all`
 
-![alt text](image-7.png)
+![alt text](.pic/image-19.png)
 
 ## Используя ansible, запустите на машине клиента скрипт, выводящий объем свободной оперативной машины
 
 adminstd@kmsserver ~ $ ansible -a 'free -h' client
 
-![alt text](image-6.png)
+![alt text](.pic/image-20.png)
 
 ## Создайте playbook, выполняющий следующие задания:
 
