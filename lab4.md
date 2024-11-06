@@ -53,9 +53,7 @@ smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenicated, reject_u
 
 adminstd@kmsserver ~ $ `stl restart postfix`
 
-
 ### Настройте сервер dovecot в соответствии с указаниями выше. После настройки перезапустите службу.
-
 
 adminstd@kmsserver ~ $ `sn /etc/dovecot/conf.d/10-auth.conf`
 
@@ -87,7 +85,6 @@ mail_location = maildir:~/Mailbox/
 
 adminstd@kmsserver ~ $ `stl restart dovecot`
 
-
 ### На сервере откройте приложение Thunderbird, укажите в нем установленные параметры и создайте почтовый аккаунт.
 
 adminstd@kmsserver ~ $ `thunderbird`
@@ -114,8 +111,6 @@ adminstd@kmsserver ~ $ `thunderbird`
 
 `sudo pdpl-user kmsmailserver -i 63`
 
-
-
 ### Отправьте любое письмо с сервера на сервер.
 
 Вот тут я на новую версию астры перешел, поэтому скрины бутут чуть поприятнее
@@ -132,8 +127,6 @@ adminstd@kmsserver ~ $ `thunderbird`
 
 ![alt text](.pic/image-18.png)
 
-
-
 ## Задание 3
 
 ### Создайте почту yandex.ru и отправьте любое сообщение на неё от сервера и клиента
@@ -146,7 +139,7 @@ adminstd@kmsserver ~ $ `thunderbird`
 
 В main.cf добавляем
 
-adminstd@kmsserver ~ $ sn /etc/postfix/main.cf
+adminstd@kmsserver ~ $ `sn /etc/postfix/main.cf`
 
 ```bash
 smtp_use_tls = yes
@@ -164,26 +157,25 @@ smtp_tls_loglevel = 1
 relayhost = smtp.yandex.ru:465
 ```
 
-
 Создаем вот такие файлы
 
-adminstd@kmsserver ~ $ sn /etc/postfix/generic
+adminstd@kmsserver ~ $ `sn /etc/postfix/generic`
 
 ```bash
 kmsmailserver@kms.miet.stu karpukhin235@yandex.ru
 kmsmailclient@kms.miet.stu karpukhin235@yandex.ru
 ```
 
-adminstd@kmsserver ~ $ sn /etc/postfix/sasl_passwd
+adminstd@kmsserver ~ $ `sn /etc/postfix/sasl_passwd`
 ```bash
 smtp.yandex.ru karpukhin235@yandex.ru:rcobiickdswuqhlr
 ```
 
-adminstd@kmsserver ~ $ sudo postmap /etc/postfix/generic 
+adminstd@kmsserver ~ $ `sudo postmap /etc/postfix/generic` 
 
-adminstd@kmsserver ~ $ sudo postmap /etc/postfix/sasl_passwd 
+adminstd@kmsserver ~ $ `sudo postmap /etc/postfix/sasl_passwd` 
 
-## Контрольные вопросы
+## Контрольные вопросы (ChatGPT)
 
 ### 1. Для чего необходимы почтовые сервера?
 Почтовые серверы необходимы для отправки, получения и хранения электронной почты. Они обеспечивают обмен сообщениями между пользователями и другими серверами, управляют очередями сообщений и обеспечивают защиту и хранение данных. Основные типы почтовых серверов включают:

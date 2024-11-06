@@ -106,12 +106,12 @@ adminstd@kmsserver ~ $ `sn /etc/ansible/fill.yml`
 ```bash
 - name: Gather system information and write to file
   hosts: all
-  gather_facts: true
+  gather_facts: true #это значит, что при старте системы автоматически будет собираться информация о системе
   tasks:
-    - name: Get machine's IP address
+    - name: Get IP address
       ansible.builtin.command: hostname -I
       register: ip_address
-      changed_when: false
+      changed_when: false #этот флаг означает, что при выполнении данной задачи, её статус не будет помечаться как "изменившая" состояние системы. (синтаксичекий сахар)
 
     - name: Get memory usage in MB
       ansible.builtin.shell: "free -m | awk '/Mem:/ {print $3}'"
@@ -123,24 +123,19 @@ adminstd@kmsserver ~ $ `sn /etc/ansible/fill.yml`
       register: load_average
       changed_when: false
 
-    - name: Write system information to info file in home directory
+    - name: Write to info file
       ansible.builtin.lineinfile:
         path: "{{ ansible_env.HOME }}/info"
         create: true
         line: "{{ ansible_hostname }} | Karpukhin | {{ ip_address.stdout.strip() }} | {{ memory_usage.stdout.strip() }} | {{ load_average.stdout.strip() }}"
       become: true
+      #strip() - удаляет пробелы и символы новой строки
 
-    - name: Create serverkms or clientkms directory if not exists
-      ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/{{ 'Clientkms' if inventory_hostname == 'client1' else 'Serverkms' }}"
-        state: directory
-      become: true
-
-    - name: Debug - check target directory
+    - name: Debug
       ansible.builtin.debug:
         msg: "Target directory: {{ ansible_env.HOME }}/{{ 'Clientkms' if inventory_hostname == 'client1' else 'Serverkms' }}"
 
-    - name: Move info file to serverkms or clientkms directory
+    - name: Move file to directories
       ansible.builtin.command: >
         mv "{{ ansible_env.HOME }}/info" "{{ ansible_env.HOME }}/{{ 'Clientkms' if inventory_hostname == 'client1' else 'Serverkms' }}/info"
       become: true
@@ -151,6 +146,10 @@ adminstd@kmsserver ~ $ `sn /etc/ansible/fill.yml`
         regexp: 'Karpukhin'
         replace: 'Maxim'
       become: true
+
+    - name: Check load average and display status message
+      ansible.builtin.debug:
+        msg: "state {{ ansible_hostname }} {{ 'bad' if load_average.stdout | float > 1 else 'good' }}"
 ```
 
 ## Контрольные вопросы:
