@@ -31,19 +31,19 @@ adminstd@kmsserver ~ $ `ansible -m ping all`
 
 ## Используя ansible, запустите на машине клиента скрипт, выводящий объем свободной оперативной машины
 
-adminstd@kmsserver ~ $ ansible -a 'free -h' client
+adminstd@kmsserver ~ $ `ansible -a 'free -h' client`
 
 ![alt text](.pic/image-20.png)
 
 ## Создайте playbook, выполняющий следующие задания:
 
-adminstd@kmsserver ~ $ sudo touch /etc/ansible/myplaybook.yml
+adminstd@kmsserver ~ $ `sudo touch /etc/ansible/myplaybook.yml`
 
 ### Создайте директории Serverkms на сервере и Clientkms на машине клиента соответвтвенно. Данные директории создаются в домашней директории пользователя.
 
 ### Создайте файлы с названием info в домашней директории. Добавьте проверку на существование файла. В случае его наличия файл повторно не создается.
 
-adminstd@kmsserver ~ $ sn -l /etc/ansible/create.yml 
+adminstd@kmsserver ~ $ `sn -l /etc/ansible/create.yml`
 
 ```bash
 - name: Create dirs and files
@@ -88,12 +88,10 @@ adminstd@kmsserver ~ $ sn -l /etc/ansible/create.yml
         path: "{{ ansible_env.HOME }}/info"
         state: touch
       when: inventory_hostname == 'client1' and cli_file_check.stat.exists == false
-
-  
-  ansible_memory_mb.nocache.used
 ```
+  ansible_memory_mb.nocache.used
 
-adminstd@kmsserver ~ $ ansible-playbook /etc/ansible/create.yml
+adminstd@kmsserver ~ $ `ansible-playbook /etc/ansible/create.yml`
 
 ### Заполните данные файлы информацией о системе, влключающей в себя имя машины, вашу фамилию, ip адрес, объём занятой оперативной памяти (в Mb), среднюю нагрузку за последние 15 минут работы (см. файл /proc/loadavg). Формат записи: имя машины | Karpukhin | ip адрес | объем занятой оперативной памяти | нагрузка за последние 15 минут работы
 
@@ -103,7 +101,7 @@ adminstd@kmsserver ~ $ ansible-playbook /etc/ansible/create.yml
 
 ### В зависимости от значения нагрузки в файле выведите сообщение на экран. Если нагрузка больше 1: state NAME_MACHINE bad. Если меньше 1, то state NAME_MACHINE good.
 
-adminstd@kmsserver ~ $ sn /etc/ansible/fill.yml 
+adminstd@kmsserver ~ $ `sn /etc/ansible/fill.yml` 
 
 ```bash
 - name: Gather system information and write to file
@@ -158,7 +156,14 @@ adminstd@kmsserver ~ $ sn /etc/ansible/fill.yml
 ## Контрольные вопросы:
 
 ### 1. Какая команда используется для проигрывания сценариев?
+Команда для проигрывания сценариев в Ansible — `ansible-playbook`.
 
 ### 2. Как называется ключ в play, в котором указываются хосты для выполнения заданий (task)?
+Ключ, в котором указываются хосты для выполнения заданий, называется `hosts`.
 
-### 1. Что нужно сделать для того, чтобы задания в сценарии выполнялись с привилегиями администратора?
+### 3. Что нужно сделать для того, чтобы задания в сценарии выполнялись с привилегиями администратора?
+Чтобы задания в сценарии выполнялись с привилегиями администратора, необходимо использовать ключ `become`. В playbook это можно указать следующим образом:
+
+```yaml
+become: true
+```
