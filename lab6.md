@@ -149,7 +149,7 @@ adminstd@kmsserver ~ $ `sudo setfacl    -m u:postgres:rx /etc/parsec/capdb`
 adminstd@kmsserver ~ $ `sudo pdpl-user bacula -l 0:0`
 
 ```bash
-инимальная метка: Уровень_0:Низкий:Нет:0x0
+минимальная метка: Уровень_0:Низкий:Нет:0x0
    0:0:0x0:0x0
 максимальная метка: Уровень_0:Низкий:Нет:0x0
    0:0:0x0:0x0
@@ -203,19 +203,20 @@ Catalog {
   Name = BaculaCatalog
 
   # имя базы данных на сервере PostgreSQL
-  dbname = "bacula"  
+  dbname = "bacula"
   
   # адрес сервера БД PostgreSQL
-  DB Address = "192.168.122.13"  
+  DB Address = "192.168.122.13"
 
   # порт подключения на сервере
   DB PORT = 5432
 
   # имя пользователя базы данных на сервере PostgreSQL
-  dbuser = "bacula"  
+  dbuser = "bacula"
   
   dbpassword = "bacula"
 }
+
 
   # Подключение к Хранилищу (Storage)
 Storage {
