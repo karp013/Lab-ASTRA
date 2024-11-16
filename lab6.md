@@ -473,7 +473,7 @@ adminstd@kmsserver ~ $ `sudo journalctl -xe`
 
 
 
-### Настройка Bacula Storage
+### 2. Настройка Bacula Storage
 
 adminstd@kmsserver ~ $ `sn /etc/bacula/bacula-sd.conf`
 
@@ -542,7 +542,7 @@ adminstd@kmsserver ~ $ `sudo systemctl restart bacula-sd.service`
 adminstd@kmsserver ~ $ `sudo journalctl -xe`
 
 
-## Настройка Bacula FileDaemon (клиент): настройка
+## 3. Настройка Bacula FileDaemon
 
 На клиенте
 
@@ -601,7 +601,7 @@ adminstd@kmsclient ~ $ `sudo systemctl restart bacula-fd.service`
 adminstd@kmsclient ~ $ `sudo journalctl -xe`
 
 
-## Настройка Bacula console
+## 4. Настройка Bacula console
 
 adminstd@kmsserver ~ $ `sn /etc/bacula/bconsole.conf`
 
@@ -617,13 +617,255 @@ Director {
 
 ### Проверка работоспососбности
 
-adminstd@kmsserver ~ $ sudo bconsole
+adminstd@kmsserver ~ $ `sudo bconsole`
 
 Если в настройках файла bconsole.conf ошибок нет, то подключение пройдет успешно
-В появившемся окне набираем "status" и выбираем статус какого компонента мы хотим посмотреть.
+В появившемся окне набираем можно набрать `status` и выбираем статус какого компонента мы хотим посмотреть.
+
+Далее для создания бекапа пишем
+
+`run`
+
+Выбираем задачу
+
+Поскольку это первый бекап, нужно изменит `Level` с `Incremental` на `Full`
+
+Далее, если немного подождать и написать `messages`, можно увидеть информацию о том, успешно ли прошел процесс резервного копирования
+
+Если проверить папку `/backups/files1/` то там можно увидеть файл бекапа
+
+Также нужно запомнить `JobId`, он понадобится дальше во время восстановления
+
+<details><summary>тык</summary>
+
+```bash
+adminstd@kmsserver ~ $ sudo bconsole 
+Connecting to Director 192.168.122.13:9101
+1000 OK: 103 bacula-dir Version: 9.6.7 (10 December 2020)
+Enter a period to cancel a command.
+*run
+Automatically selected Catalog: BaculaCatalog
+Using Catalog "BaculaCatalog"
+A job name must be specified.
+The defined Job resources are:
+     1: BackupClient1
+     2: RestoreFiles
+Select Job resource (1-2): 1
+Run Backup job
+JobName:  BackupClient1
+Level:    Incremental
+Client:   dir-fd
+FileSet:  Full Set
+Pool:     File (From Job resource)
+Storage:  stor-sd (From Job resource)
+When:     2024-11-16 22:12:21
+Priority: 10
+OK to run? (yes/mod/no): mod
+Parameters to modify:
+     1: Level
+     2: Storage
+     3: Job
+     4: FileSet
+     5: Client
+     6: When
+     7: Priority
+     8: Pool
+     9: Plugin Options
+Select parameter to modify (1-9): 1
+Levels:
+     1: Full
+     2: Incremental
+     3: Differential
+     4: Since
+     5: VirtualFull
+Select level (1-5): 1
+Run Backup job
+JobName:  BackupClient1
+Level:    Full
+Client:   dir-fd
+FileSet:  Full Set
+Pool:     File (From Job resource)
+Storage:  stor-sd (From Job resource)
+When:     2024-11-16 22:12:21
+Priority: 10
+OK to run? (yes/mod/no): yes
+Job queued. JobId=26
+You have messages.
+*messages
+16-ноя 22:12 bacula-dir JobId 26: Bacula bacula-dir 9.6.7 (10Dec20):
+  Build OS:               x86_64-pc-linux-gnu AstraLinux 1.8_x86-64
+  JobId:                  26
+  Job:                    BackupClient1.2024-11-16_22.12.33_12
+  Backup Level:           Full
+  Client:                 "dir-fd" 9.6.7 (10Dec20) x86_64-pc-linux-gnu,AstraLinux,1.8_x86-64
+  FileSet:                "Full Set" 2024-11-15 22:38:12
+  Pool:                   "File" (From Job resource)
+  Catalog:                "BaculaCatalog" (From Client resource)
+  Storage:                "stor-sd" (From Job resource)
+  Scheduled time:         16-ноя-2024 22:12:21
+  Start time:             16-ноя-2024 22:12:35
+  End time:               16-ноя-2024 22:12:37
+  Elapsed time:           2 secs
+  Priority:               10
+  FD Files Written:       1,199
+  SD Files Written:       1,199
+  FD Bytes Written:       24,872,743 (24.87 MB)
+  SD Bytes Written:       25,067,385 (25.06 MB)
+  Rate:                   12436.4 KB/s
+  Software Compression:   74.7% 4.0:1
+  Comm Line Compression:  None
+  Snapshot/VSS:           no
+  Encryption:             no
+  Accurate:               no
+  Volume name(s):         Vol-0007
+  Volume Session Id:      6
+  Volume Session Time:    1731782799
+  Last Volume Bytes:      151,002,346 (151.0 MB)
+  Non-fatal FD errors:    0
+  SD Errors:              0
+  FD termination status:  OK
+  SD termination status:  OK
+  Termination:            Backup OK
+
+16-ноя 22:12 bacula-dir JobId 26: Begin pruning Jobs older than 6 months .
+16-ноя 22:12 bacula-dir JobId 26: No Jobs found to prune.
+16-ноя 22:12 bacula-dir JobId 26: Begin pruning Files.
+16-ноя 22:12 bacula-dir JobId 26: No Files found to prune.
+16-ноя 22:12 bacula-dir JobId 26: End auto prune.
+
+```
+
+</details>
+
+Далее восстановим резервную копию
+
+`restore` 
+
+Вводим `JobId`
+
+`ls`
+
+`mark home/`
+
+`done`
+
+Выбираем нужный File Daemon
+
+`yes`
+
+<details><summary>тык</summary>
+
+```bash
+*restore
+Using Catalog "BaculaCatalog"
+
+First you select one or more JobIds that contain files
+to be restored. You will be presented several methods
+of specifying the JobIds. Then you will be allowed to
+select which files from those JobIds are to be restored.
+
+To select the JobIds, you have the following choices:
+     1: List last 20 Jobs run
+     2: List Jobs where a given File is saved
+     3: Enter list of comma separated JobIds to select
+     4: Enter SQL list command
+     5: Select the most recent backup for a client
+     6: Select backup for a client before a specified time
+     7: Enter a list of files to restore
+     8: Enter a list of files to restore before a specified time
+     9: Find the JobIds of the most recent backup for a client
+    10: Find the JobIds for a backup for a client before a specified time
+    11: Enter a list of directories to restore for found JobIds
+    12: Select full restore to a specified Job date
+    13: Cancel
+Select item:  (1-13): 3
+Enter JobId(s), comma separated, to restore: 26
+You have selected the following JobId: 26
+
+Building directory tree for JobId(s) 26 ...  +++++++++++++++++++++++++++++++++++++++++
+995 files inserted into the tree.
+
+You are now entering file selection mode where you add (mark) and
+remove (unmark) files to be restored. No files are initially added, unless
+you used the "all" keyword on the command line.
+Enter "done" to leave this mode.
+
+cwd is: /
+ls
+home/
+$ mark home/ 
+1,199 files marked.
+$ done
+Bootstrap records written to /var/lib/bacula/bacula-dir.restore.3.bsr
+
+The Job will require the following (*=>InChanger):
+   Volume(s)                 Storage(s)                SD Device(s)
+===========================================================================
+   
+    Vol-0007                  stor-sd                   DevStorage               
+
+Volumes marked with "*" are in the Autochanger.
 
 
+1,199 files selected to be restored.
 
-## 5. Настроить резервное копирование вашей домашней директории с клиента на сервер
+Defined Clients:
+     1: bacula-fd
+     2: dir-fd
+Select the Client (1-2): 2
+Run Restore job
+JobName:         RestoreFiles
+Bootstrap:       /var/lib/bacula/bacula-dir.restore.3.bsr
+Where:           /home2
+Replace:         Always
+FileSet:         Full Set
+Backup Client:   dir-fd
+Restore Client:  dir-fd
+Storage:         stor-sd
+When:            2024-11-16 22:14:56
+Catalog:         BaculaCatalog
+Priority:        10
+Plugin Options:  *None*
+OK to run? (yes/mod/no): yes
+Job queued. JobId=27
+*
+You have messages.
+*messages
+16-ноя 22:15 bacula-dir JobId 27: Start Restore Job RestoreFiles.2024-11-16_22.14.58_13
+16-ноя 22:15 bacula-dir JobId 27: Restoring files from JobId(s) 26
+16-ноя 22:15 bacula-dir JobId 27: Using Device "DevStorage" to read.
+16-ноя 22:15 stor-sd JobId 27: Ready to read from volume "Vol-0007" on File device "DevStorage" (/backups/files1).
+16-ноя 22:15 dir-fd JobId 27: Warning: bxattr_linux.c:280 setxattr error on file "/home2/home/.pdp/": ERR=Отказано в доступе
+16-ноя 22:15 stor-sd JobId 27: Forward spacing Volume "Vol-0007" to addr=125867175
+16-ноя 22:15 stor-sd JobId 27: End of Volume "Vol-0007" at addr=151002346 on device "DevStorage" (/backups/files1).
+16-ноя 22:15 stor-sd JobId 27: Elapsed time=00:00:01, Transfer rate=25.06 M Bytes/second
+16-ноя 22:15 dir-fd JobId 27: Warning: bxattr_linux.c:280 setxattr error on file "/home2/home/": ERR=Отказано в доступе
+16-ноя 22:15 bacula-dir JobId 27: Bacula bacula-dir 9.6.7 (10Dec20):
+  Build OS:               x86_64-pc-linux-gnu AstraLinux 1.8_x86-64
+  JobId:                  27
+  Job:                    RestoreFiles.2024-11-16_22.14.58_13
+  Restore Client:         dir-fd
+  Where:                  /home2
+  Replace:                Always
+  Start time:             16-ноя-2024 22:15:00
+  End time:               16-ноя-2024 22:15:01
+  Elapsed time:           1 sec
+  Files Expected:         1,199
+  Files Restored:         1,199
+  Bytes Restored:         99,028,909 (99.02 MB)
+  Rate:                   99028.9 KB/s
+  FD Errors:              0
+  FD termination status:  OK
+  SD termination status:  OK
+  Termination:            Restore OK
 
+16-ноя 22:15 bacula-dir JobId 27: Begin pruning Jobs older than 6 months .
+16-ноя 22:15 bacula-dir JobId 27: No Jobs found to prune.
+16-ноя 22:15 bacula-dir JobId 27: Begin pruning Files.
+16-ноя 22:15 bacula-dir JobId 27: No Files found to prune.
+16-ноя 22:15 bacula-dir JobId 27: End auto prune.
+```
 
+</details>
+
+Далее можно проверить папку `/home2` на клиенте и увидеть, что там появилась восстановленная резервная копия
