@@ -388,6 +388,8 @@ Messages {
 
 adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/job.d/`
 
+adminstd@kmsserver ~ $ `sn /etc/bacula/job.d/backup-dir-fd.conf`
+
 Задача для создания бекапа
 
 ```bash
@@ -599,6 +601,19 @@ adminstd@kmsclient ~ $ `sudo systemctl restart bacula-fd.service`
 adminstd@kmsclient ~ $ `sudo journalctl -xe`
 
 
+## Настройка Bacula console
+
+adminstd@kmsserver ~ $ `sn /etc/bacula/bconsole.conf`
+
+```bash
+Director {
+  Name = dir-dir
+  DIRport = 9101
+  # IP-адрес Директора
+  address = 192.168.122.13
+  Password = "dirpass"
+}
+```
 
 ### Проверка работоспососбности
 
