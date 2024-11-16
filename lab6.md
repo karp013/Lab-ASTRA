@@ -162,11 +162,9 @@ adminstd@kmsserver ~ $ `sudo /usr/share/bacula-director/make_postgresql_tables`
 adminstd@kmsserver ~ $ `sudo /usr/share/bacula-director/grant_postgresql_privileges`
 
 
-## Bacula Director: настройка
+## Настройка директора
 
-Файл конфигурации Bacula по умолчанию /etc/bacula/bacula-dir.conf имеет в себе более 300 строк, в которых много служебной информации и примеры. Нам все это не нужно. Можно оставить только самое нужное
-
-Основная настройка директора
+### Основной файл директора
 
 adminstd@kmsserver ~ $ `sn /etc/bacula/bacula-dir.conf`
 
@@ -194,11 +192,11 @@ Director {
   Password = "dirpass"
 
   # Конфигурация параметров уведомлений (описано в секции Messages)
-  Messages = Daemon
+  Messages = Standard
   
   # IP-адрес Директора
   DirAddress = 192.168.122.13
-
+}
 
   # Подключение к базе данных (Bacula Catalog)
 Catalog {
@@ -217,7 +215,7 @@ Catalog {
   dbuser = "bacula"  
   
   dbpassword = "bacula"
-
+}
 
   # Подключение к Хранилищу (Storage)
 Storage {
@@ -230,7 +228,7 @@ Storage {
   Password = "storpass"
 
   # имя устройства хранения, описаное в файле bacula-sd.conf
-  Device = Autochanger1
+  Device = DevStorage
 
   # Должно соответствовать директиве Media Type ресурса Device настройки
   Media Type = File1
@@ -264,6 +262,8 @@ Pool {
 
   # с каких символов начинаются имена томов пула
   Label Format = "Vol-"
+}
+
 
 Messages {
   Name = Standard
@@ -290,11 +290,10 @@ Messages {
   catalog = all
 }
 
-# Далее необходимо настроить подгрузку остальных конфигурационных файлов, дописав в этом же файле ( /etc/bacula/bacula-dir.conf ) следующее:
-# Дальнейшие строчки подгружают все конфигурационные файлы из папок
-# «job.d»
- 
+
+# эта строка подгружает все конфигурационные файлы из папки «job.d»
 @|"sh -c 'for f in /etc/bacula/job.d/*.conf ; do echo @${f} ; done'"
+
 
 Schedule {
   Name = "WeeklyCycle"
@@ -361,20 +360,11 @@ FileSet {
     File = /tmp
   }
 }
-
-
-
 ```
-
-
-
-
 
 Поведение уведомлений (Messages)
 
 ```bash
-
-
 # Данная секция описывает поведение уведомлений непосредственно Для самого демона Bacula
 Messages {
   Name = Daemon
@@ -393,52 +383,11 @@ Messages {
 }
 ```
 
-Фрагментация конфигурации (Other conf)
-
-
-
-Дополнительные конфигурационные файлы
-
-
-Чтобы было проще ориентироваться в конфигурационных файлах, вынесем часть конфигурации в отдельные файлы.
-
-adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/schedule.d/`
-
-adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/client.d/`
-
-adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/fileset.d/`
+### Создание задач (Jobs)
 
 adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/job.d/`
 
-Конфигурации расписании (Schedule's)
-
-adminstd@kmsserver ~ $ sn /etc/bacula/schedule.d/dir-fd.conf
-
-```bash
-
-```
-
-Создадим файл настроек расписания обработки файлов при выполнении заданий для Bacula Catalog
-
-Конфигурация Клиента (Client)
-
-```bash
-
-```
-
-Конфигурации наборов файлов (FileSet's)
-
-adminstd@kmsserver ~ $ sn /etc/bacula/fileset.d/dir-fd.conf
-
-```bash
-
-```
-
-adminstd@kmsserver ~ $ sn /etc/bacula/fileset.d/catalog.conf
-
-Конфигурации файлов заданий (Job's)
-
-adminstd@kmsserver ~ $ sn /etc/bacula/job.d/backup-dir-fd.conf
+Задача для создания бекапа
 
 ```bash
 Job {
@@ -481,7 +430,9 @@ Job {
 }
 ```
 
-adminstd@kmsserver ~ $ sn /etc/bacula/job.d/restore-dir-fd.conf
+Задача для восстановления данных из бекапа
+
+adminstd@kmsserver ~ $ `sn /etc/bacula/job.d/restore-dir-fd.conf`
 
 ```bash
 Job {
@@ -509,36 +460,19 @@ Job {
 }
 ```
 
-Bacula Console (bconsole.conf)
+### Проверка работоспособности
 
-adminstd@kmsserver ~ $ sn /etc/bacula/bconsole.conf 
+adminstd@kmsserver ~ $ `sudo /usr/sbin/bacula-dir -t -c /etc/bacula/bacula-dir.conf` 
 
-```bash
-Director {
-  Name = dir-dir
-  DIRport = 9101
-  # IP-адрес Директора
-  address = 192.168.122.13
-  Password = "dirpass"
-}
-```
+adminstd@kmsserver ~ $ `sudo systemctl restart bacula-director.service`
 
-ПРОВЕРКА
-
-adminstd@kmsserver ~ $ sudo /usr/sbin/bacula-dir -t -c /etc/bacula/bacula-dir.conf 
-
-sudo systemctl restart bacula-director.service
-
-ЕЩЕ ПРОВЕРКА
-
-sudo journalctl -xe
+adminstd@kmsserver ~ $ `sudo journalctl -xe`
 
 
 
-Bacula Storage: настройка
+### Настройка Bacula Storage
 
-Файл конфигурации Bacula Storage
-
+adminstd@kmsserver ~ $ `sn /etc/bacula/bacula-sd.conf`
 
 ```bash
 Storage {
@@ -556,6 +490,7 @@ Storage {
   SDAddress = 192.168.122.13
 }
 
+
 Director {
   # Имя Директора который может подключаться к этому Хранилищу
   Name = bacula-dir
@@ -563,6 +498,7 @@ Director {
   Password = "storpass"
 }
 
+
 Device {
   Name = DevStorage
   Media Type = File1
@@ -575,41 +511,25 @@ Device {
   Maximum Concurrent Jobs = 1
 }
 
+
 Messages {
   Name = Standard
   director = dir-dir = all
 }
-
 ```
 
 
-Устройства хранения
+Создание папок в которых будет храниться бекапов
 
-adminstd@kmsserver ~ $ sudo mkdir -p /backups/files1/
-adminstd@kmsserver ~ $ sudo chmod 755 /backups/files1/
-adminstd@kmsserver ~ $ sudo chown bacula:bacula /backups/files1/
+adminstd@kmsserver ~ $ `sudo mkdir -p /backups/files1/`
 
-adminstd@kmsserver ~ $ sudo mkdir /backups/files2/
-adminstd@kmsserver ~ $ sudo chmod 755 /backups/files2/
-adminstd@kmsserver ~ $ sudo chown bacula:bacula /backups/files2/
+adminstd@kmsserver ~ $ `sudo chmod 755 /backups/files1/`
+
+adminstd@kmsserver ~ $ `sudo chown bacula:bacula /backups/files1/`
+
 
 ```bash
-Device {
-  Name = DevStorage
-  Media Type = File1
-  Archive Device = /backups/files1
-  LabelMedia = yes
-  Random Access = Yes
-  AutomaticMount = yes
-  RemovableMedia = no;
-  AlwaysOpen = no;
-  Maximum Concurrent Jobs = 1
-}
 
-Messages {
-  Name = Standard
-  director = dir-dir = all
-}
 ```
 
 Присвоение необходимых прав созданному файлу и назначение ему владельца (chmod and chown on file)
