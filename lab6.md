@@ -50,7 +50,7 @@ adminstd@kmsserver ~ $ `sudo passwd bacula`
 
 ## 2. Настроить пользователя bacula, создать таблицу в доступной СУБД и выдать привилегии на работу с ней пользователю
 
-Создать пользователя БД bacula с паролем «bacula» для работы с Bacula и сделать это надо не от имени учетной записи администратора.
+Создать пользователя БД bacula с паролем «bacula» для работы с Bacula
 
 Войти в интерфейс управления psql командой:
 
@@ -142,7 +142,7 @@ adminstd@kmsserver ~ $ `sudo setfacl -d -m u:postgres:r /etc/parsec/capdb`
 
 adminstd@kmsserver ~ $ `sudo setfacl -R -m u:postgres:r /etc/parsec/capdb`
 
-adminstd@kmsserver ~ $ `sudo setfacl    -m u:postgres:rx /etc/parsec/capd`
+adminstd@kmsserver ~ $ `sudo setfacl    -m u:postgres:rx /etc/parsec/capdb`
 
 Пользователю bacula задаем минимальный и максимальный уровень:
 
