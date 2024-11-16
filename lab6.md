@@ -543,9 +543,9 @@ adminstd@kmsserver ~ $ `sudo journalctl -xe`
 
 На клиенте
 
-adminstd@kmsserver ~ $ `sudo apt install bacula-fd`
+adminstd@kmsclient ~ $ `sudo apt install bacula-fd`
 
-adminstd@kmsserver ~ $ `sn /etc/bacula/bacula-fd.conf`
+adminstd@kmsclient ~ $ `sn /etc/bacula/bacula-fd.conf`
 
 ```bash
 FileDaemon {
@@ -591,15 +591,15 @@ adminstd@kmsclient ~ $ `sudo chmod 644 /etc/bacula/bacula-fd.conf`
 
 adminstd@kmsclient ~ $ `sudo chown root:bacula /etc/bacula/bacula-fd.conf`
 
-adminstd@kmsclient ~ $ sudo /usr/sbin/bacula-fd -t -c /etc/bacula/bacula-fd.conf
+adminstd@kmsclient ~ $ `sudo /usr/sbin/bacula-fd -t -c /etc/bacula/bacula-fd.conf`
 
-adminstd@kmsclient ~ $ sudo systemctl restart bacula-fd.service
+adminstd@kmsclient ~ $ `sudo systemctl restart bacula-fd.service`
 
-adminstd@kmsclient ~ $ sudo journalctl -xe
+adminstd@kmsclient ~ $ `sudo journalctl -xe`
 
 
 
-ПРОВЕРКА РАБОТОСПОСОБНОСТИ
+### Проверка работоспососбности
 
 adminstd@kmsserver ~ $ sudo bconsole
 
@@ -607,19 +607,6 @@ adminstd@kmsserver ~ $ sudo bconsole
 В появившемся окне набираем "status" и выбираем статус какого компонента мы хотим посмотреть.
 
 
-
-## 4. Настроить доступ к коснсоли (это производится в bconsole.conf на каждом устройстве)
-
-adminstd@kmsserver ~ $ sn /etc/bacula/bconsole.conf 
-
-```bash
-Director {
-  Name = bacula-dir
-  DIRport = 9101
-  address = 192.168.122.13
-  Password = "1"
-}
-```
 
 ## 5. Настроить резервное копирование вашей домашней директории с клиента на сервер
 
