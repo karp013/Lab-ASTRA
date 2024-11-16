@@ -198,12 +198,9 @@ Director {
   
   # IP-адрес Директора
   DirAddress = 192.168.122.13
-}
-```
 
-Подключение к базе данных (Bacula Catalog)
 
-```bash
+  # Подключение к базе данных (Bacula Catalog)
 Catalog {
   Name = BaculaCatalog
 
@@ -220,12 +217,9 @@ Catalog {
   dbuser = "bacula"  
   
   dbpassword = "bacula"
-} 
-```
 
-Подключение к Хранилищу (Storage)
 
-```bash
+  # Подключение к Хранилищу (Storage)
 Storage {
   Name = stor-sd
   # IP-адрес хранилища.
@@ -245,11 +239,9 @@ Storage {
   # (не рекомендуется одновременно запускать более одного задания)
   Maximum Concurrent Jobs = 1
 }
-```
 
-Настройка групп томов Хранилища (Pool's)
 
-```bash
+# Настройка групп томов Хранилища (Pool's)
 Pool {
   Name = File
   # тип пула
@@ -272,12 +264,7 @@ Pool {
 
   # с каких символов начинаются имена томов пула
   Label Format = "Vol-"
-}
-```
 
-Поведение уведомлений (Messages)
-
-```bash
 Messages {
   Name = Standard
 
@@ -303,59 +290,12 @@ Messages {
   catalog = all
 }
 
-# Данная секция описывает поведение уведомлений непосредственно Для самого демона Bacula
-Messages {
-  Name = Daemon
-
-  # команда отправки письма
-  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula daemon >
-
-  # куда = кому = и какие уведомления отправлять 
-  mail = root = all, !skipped
-
-  # какие сообщения выводить в консоль
-  console = all, !skipped, !saved
-
-  # путь к логу = какие сообщения записывать в лог
-  append = "/var/log/bacula/bacula.log" = all, !skipped
-}
-```
-
-Фрагментация конфигурации (Other conf)
-
-Далее необходимо настроить подгрузку остальных конфигурационных файлов, дописав в этом же файле ( /etc/bacula/bacula-dir.conf ) следующее:
-
-```bash
+# Далее необходимо настроить подгрузку остальных конфигурационных файлов, дописав в этом же файле ( /etc/bacula/bacula-dir.conf ) следующее:
 # Дальнейшие строчки подгружают все конфигурационные файлы из папок
-# «job.d» «client.d» «fileset.d» «schedule.d»
+# «job.d»
  
 @|"sh -c 'for f in /etc/bacula/job.d/*.conf ; do echo @${f} ; done'"
 
-@|"sh -c 'for f in /etc/bacula/client.d/*.conf ; do echo @${f} ; done'"
-
-@|"sh -c 'for f in /etc/bacula/fileset.d/*.conf ; do echo @${f} ; done'"
-
-@|"sh -c 'for f in /etc/bacula/schedule.d/*.conf ; do echo @${f} ; done'"
-```
-
-Дополнительные конфигурационные файлы
-
-
-Чтобы было проще ориентироваться в конфигурационных файлах, вынесем часть конфигурации в отдельные файлы.
-
-adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/schedule.d/`
-
-adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/client.d/`
-
-adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/fileset.d/`
-
-adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/job.d/`
-
-Конфигурации расписании (Schedule's)
-
-adminstd@kmsserver ~ $ sn /etc/bacula/schedule.d/dir-fd.conf
-
-```bash
 Schedule {
   Name = "WeeklyCycle"
 
@@ -364,24 +304,8 @@ Schedule {
   Run = Differential 2nd-5th sun at 23:05
   Run = Incremental mon-sat at 23:05
 }
-```
 
-Создадим файл настроек расписания обработки файлов при выполнении заданий для Bacula Catalog
 
-adminstd@kmsserver ~ $ sn /etc/bacula/schedule.d/catalog.conf
-
-```bash
-Schedule {
-  Name = "WeeklyCycleAfterBackup"
-
-  # Тип бекапа, периодичность и время запуска
-  Run = Full sun-sat at 23:10
-}
-```
-
-Конфигурация Клиента (Client)
-
-```bash
 Client {
   Name = dir-fd
 
@@ -406,13 +330,7 @@ Client {
   # удалять записи из Bacula Catalog старше вышеуказанных значений
   AutoPrune = yes
 }
-```
 
-Конфигурации наборов файлов (FileSet's)
-
-adminstd@kmsserver ~ $ sn /etc/bacula/fileset.d/dir-fd.conf
-
-```bash
 FileSet {
   Name = "Full Set"
 
@@ -443,6 +361,77 @@ FileSet {
     File = /tmp
   }
 }
+
+
+
+```
+
+
+
+
+
+Поведение уведомлений (Messages)
+
+```bash
+
+
+# Данная секция описывает поведение уведомлений непосредственно Для самого демона Bacula
+Messages {
+  Name = Daemon
+
+  # команда отправки письма
+  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula daemon >
+
+  # куда = кому = и какие уведомления отправлять 
+  mail = root = all, !skipped
+
+  # какие сообщения выводить в консоль
+  console = all, !skipped, !saved
+
+  # путь к логу = какие сообщения записывать в лог
+  append = "/var/log/bacula/bacula.log" = all, !skipped
+}
+```
+
+Фрагментация конфигурации (Other conf)
+
+
+
+Дополнительные конфигурационные файлы
+
+
+Чтобы было проще ориентироваться в конфигурационных файлах, вынесем часть конфигурации в отдельные файлы.
+
+adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/schedule.d/`
+
+adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/client.d/`
+
+adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/fileset.d/`
+
+adminstd@kmsserver ~ $ `sudo mkdir /etc/bacula/job.d/`
+
+Конфигурации расписании (Schedule's)
+
+adminstd@kmsserver ~ $ sn /etc/bacula/schedule.d/dir-fd.conf
+
+```bash
+
+```
+
+Создадим файл настроек расписания обработки файлов при выполнении заданий для Bacula Catalog
+
+Конфигурация Клиента (Client)
+
+```bash
+
+```
+
+Конфигурации наборов файлов (FileSet's)
+
+adminstd@kmsserver ~ $ sn /etc/bacula/fileset.d/dir-fd.conf
+
+```bash
+
 ```
 
 adminstd@kmsserver ~ $ sn /etc/bacula/fileset.d/catalog.conf
