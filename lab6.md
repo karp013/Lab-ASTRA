@@ -528,7 +528,7 @@ adminstd@kmsserver ~ $ `sudo chmod 755 /backups/files1/`
 adminstd@kmsserver ~ $ `sudo chown bacula:bacula /backups/files1/`
 
 
-Присвоение необходимых прав созданному файлу и назначение ему владельца (chmod and chown on file)
+### Присвоение необходимых прав созданному файлу и назначение ему владельца (chmod and chown on file)
 
 adminstd@kmsserver ~ $ `sudo chmod 644 /etc/bacula/bacula-sd.conf`
 
@@ -539,11 +539,13 @@ adminstd@kmsserver ~ $ `sudo systemctl restart bacula-sd.service`
 adminstd@kmsserver ~ $ `sudo journalctl -xe`
 
 
-Bacula FileDaemon (клиент): настройка
+## Настройка Bacula FileDaemon (клиент): настройка
 
-на клиенте
+На клиенте
 
- sudo apt install bacula-fd
+adminstd@kmsserver ~ $ `sudo apt install bacula-fd`
+
+adminstd@kmsserver ~ $ `sn /etc/bacula/bacula-fd.conf`
 
 ```bash
 FileDaemon {
@@ -566,12 +568,14 @@ FileDaemon {
   FDAddress = 192.168.122.14
 }
 
+
 Director {
   # Имя Директора который может подключаться к этому Клиенту
   Name = bacula-dir
   # Пароль подключения к этому Клиенту
   Password = "clientpass"
 }
+
 
 Messages {
   Name = Standard
@@ -583,12 +587,14 @@ Messages {
 
 Присвоение необходимых прав созданному файлу и назначение ему владельца (chmod and chown on file)
 
-adminstd@kmsclient ~ $ sudo chmod 644 /etc/bacula/bacula-fd.conf
+adminstd@kmsclient ~ $ `sudo chmod 644 /etc/bacula/bacula-fd.conf`
 
-adminstd@kmsclient ~ $ sudo chown root:bacula /etc/bacula/bacula-fd.conf
+adminstd@kmsclient ~ $ `sudo chown root:bacula /etc/bacula/bacula-fd.conf`
 
 adminstd@kmsclient ~ $ sudo /usr/sbin/bacula-fd -t -c /etc/bacula/bacula-fd.conf
+
 adminstd@kmsclient ~ $ sudo systemctl restart bacula-fd.service
+
 adminstd@kmsclient ~ $ sudo journalctl -xe
 
 
