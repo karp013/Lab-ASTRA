@@ -270,10 +270,10 @@ Messages {
   Name = Standard
 
   # команда отправки письма
-  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: %t %e >
+  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: %t %e of %c %l\" %r"
 
   # команда для передачи сообщений оператору
-  operatorcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: In>
+  operatorcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: Intervention needed for %j\" %r"
 
   # куда = кому = и какие уведомления отправлять
   mail = root = all, !skipped
@@ -472,7 +472,6 @@ adminstd@kmsserver ~ $ `sudo systemctl restart bacula-director.service`
 adminstd@kmsserver ~ $ `sudo journalctl -xe`
 
 
-
 ### 2. Настройка Bacula Storage
 
 adminstd@kmsserver ~ $ `sn /etc/bacula/bacula-sd.conf`
@@ -585,8 +584,6 @@ Messages {
   director = dir-dir = all, !skipped, !restored
 }
 ```
-
-
 
 Присвоение необходимых прав созданному файлу и назначение ему владельца (chmod and chown on file)
 
