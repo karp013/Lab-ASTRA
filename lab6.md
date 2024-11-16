@@ -223,50 +223,6 @@ Catalog {
 } 
 ```
 
-Шаблонное задание (DefaultJob)
-
-```bash
-JobDefs {
-  Name = "DefaultJob"
-
-  # Тип задания (backup, restore и т.д.)
-  Type = Backup
-
-  # Уровень бэкапа (Full, Incremental, Differential и т.п)
-  Level = Incremental
-
-  # Имя клиента на котором выполняется задание
-  Client = dir-fd
-
-  # Набор файлов для выполнения задания
-  FileSet = "Full Set"
-
-
-  # Расписание выполнения задания
-  Schedule = "WeeklyCycle"
-
-  # Файловое хранилище
-  Storage = stor-sd
-
-  # Поведение уведомлений
-  Messages = Standard
-
-  # Пул, куда будем писать бэкапы. Если мы хотим сделать отдельный пул для каждого клиента,
-  # или использовать префиксы, тогда пул указывается в задании для каждого клиента
-  # переопределяя тем самым эту настройку
-  Pool = File
-
-  # Буферизация атрибутов файлов
-  SpoolAttributes = yes
-
-  # Приоритет. Давая заданиям приоритеты от 1 (max) до 10 (min), можно регулировать послед>
-  Priority = 10
-
-  # Файл хранит информацию откуда извлекать данные при восстановлении
-  Write Bootstrap = "/var/lib/bacula/%c.bsr"
-}
-```
-
 Подключение к Хранилищу (Storage)
 
 ```bash
@@ -491,21 +447,6 @@ FileSet {
 
 adminstd@kmsserver ~ $ sn /etc/bacula/fileset.d/catalog.conf
 
-```bash
-FileSet {
-  Name = "Catalog"
-  Include {
-    Options {
-      signature = MD5
-      Compression = GZIP
-      aclsupport = yes
-      xattrsupport = yes
-    }
-    File = /var/lib/bacula/bacula.sql
-  }
-}
-```
-
 Конфигурации файлов заданий (Job's)
 
 adminstd@kmsserver ~ $ sn /etc/bacula/job.d/backup-dir-fd.conf
@@ -513,8 +454,41 @@ adminstd@kmsserver ~ $ sn /etc/bacula/job.d/backup-dir-fd.conf
 ```bash
 Job {
   Name = "BackupClient1"
-  # Имя шаблонного задания
-  JobDefs = "DefaultJob"
+  
+  # Тип задания (backup, restore и т.д.)
+  Type = Backup
+
+  # Уровень бэкапа (Full, Incremental, Differential и т.п)
+  Level = Incremental
+
+  # Имя клиента на котором выполняется задание
+  Client = dir-fd
+
+  # Набор файлов для выполнения задания
+  FileSet = "Full Set"
+
+  # Расписание выполнения задания
+  Schedule = "WeeklyCycle"
+
+  # Файловое хранилище
+  Storage = stor-sd
+
+  # Поведение уведомлений
+  Messages = Standard
+
+  # Пул, куда будем писать бэкапы. Если мы хотим сделать отдельный пул для каждого клиента,
+  # или использовать префиксы, тогда пул указывается в задании для каждого клиента
+  # переопределяя тем самым эту настройку
+  Pool = File
+
+  # Буферизация атрибутов файлов
+  SpoolAttributes = yes
+
+  # Приоритет. Давая заданиям приоритеты от 1 (max) до 10 (min), можно регулировать послед>
+  Priority = 10
+
+  # Файл хранит информацию откуда извлекать данные при восстановлении
+  Write Bootstrap = "/var/lib/bacula/%c.bsr"
 }
 ```
 
@@ -543,38 +517,6 @@ Job {
 
   # Куда на клиенте восстанавливать файлы
   Where = /home2
-}
-```
-
-Создадим  файл настроек задания для резервирования файлов Bacula Catalog:
-
-```bash
-Job {
-  Name = "BackupCatalog"
-
-  # Имя шаблонного задания
-  JobDefs = "DefaultJob"
-
-  # Уровень бэкапа
-  Level = Full
-
-  # Набор восстанавливаемых файлов
-  FileSet="Catalog"
-
-  # Расписание
-  Schedule = "WeeklyCycleAfterBackup"
-
-  # скрипт выполняемый до основного задания
-  RunBeforeJob = "/etc/bacula/scripts/make_catalog_backup.pl BaculaCatalog"
-
-  # скрипт выполняемый после основного задания
-  RunAfterJob = "/etc/bacula/scripts/delete_catalog_backup"
-
-  # Файл хранит информацию откуда извлекать данные при восстановлении
-  Write Bootstrap = "/var/lib/bacula/%n.bsr"
-
-  # Приоритет запуска после выполнения основного бекапа
-  Priority = 11
 }
 ```
 
@@ -609,9 +551,6 @@ Bacula Storage: настройка
 Файл конфигурации Bacula Storage
 
 
-
-
-
 ```bash
 Storage {
   Name = stor-sd
@@ -627,34 +566,33 @@ Storage {
   # IP-адрес Хранилища
   SDAddress = 192.168.122.13
 }
-```
 
-Подключение Директора к этому Хранилищу
-
-```bash
 Director {
   # Имя Директора который может подключаться к этому Хранилищу
   Name = bacula-dir
   # Пароль подключения к этому Хранилищу
   Password = "storpass"
 }
-```
 
-```bash
-Autochanger {
-  # Имя, указывается В Директоре (директива Device ресурса Storage)
-  Name = Autochanger1
-
-  # имена устройств хранения через запятую (ресурсы Device)
-  Device = FileChgr1-Dev1, FileChgr1-Dev2
-
-  # /dev/null для виртуального дискового, имеются подстановки
-  # (%o - команда (load, unload), %a - устройство для данных, %c - устройство позиционирования и т.д.)
-  Changer Command = ""
-  # /dev/null для виртуального дискового
-  Changer Device = /dev/null
+Device {
+  Name = DevStorage
+  Media Type = File1
+  Archive Device = /backups/files1
+  LabelMedia = yes
+  Random Access = Yes
+  AutomaticMount = yes
+  RemovableMedia = no;
+  AlwaysOpen = no;
+  Maximum Concurrent Jobs = 1
 }
+
+Messages {
+  Name = Standard
+  director = dir-dir = all
+}
+
 ```
+
 
 Устройства хранения
 
@@ -668,7 +606,7 @@ adminstd@kmsserver ~ $ sudo chown bacula:bacula /backups/files2/
 
 ```bash
 Device {
-  Name = FileChgr1-Dev1
+  Name = DevStorage
   Media Type = File1
   Archive Device = /backups/files1
   LabelMedia = yes
@@ -679,22 +617,6 @@ Device {
   Maximum Concurrent Jobs = 1
 }
 
-Device {
-  Name = FileChgr1-Dev2
-  Media Type = File1
-  Archive Device = /backups/files2
-  LabelMedia = yes
-  Random Access = Yes
-  AutomaticMount = yes
-  RemovableMedia = no
-  AlwaysOpen = no
-  Maximum Concurrent Jobs = 1
-}
-```
-
-Поведение уведомлений Хранилища
-
-```bash
 Messages {
   Name = Standard
   director = dir-dir = all
@@ -737,27 +659,20 @@ FileDaemon {
   # fqdn имя или IP-адрес Клиента
   FDAddress = 192.168.122.14
 }
-```
 
-Подключение Директора к этому Клиенту
-
-```bash
 Director {
   # Имя Директора который может подключаться к этому Клиенту
   Name = bacula-dir
   # Пароль подключения к этому Клиенту
   Password = "clientpass"
 }
-```
 
-Поведение уведомлений Клиента
-
-```bash
 Messages {
   Name = Standard
   director = dir-dir = all, !skipped, !restored
 }
 ```
+
 
 
 Присвоение необходимых прав созданному файлу и назначение ему владельца (chmod and chown on file)
@@ -779,250 +694,7 @@ adminstd@kmsserver ~ $ sudo bconsole
 Если в настройках файла bconsole.conf ошибок нет, то подключение пройдет успешно
 В появившемся окне набираем "status" и выбираем статус какого компонента мы хотим посмотреть.
 
-## 3. Настроить Director daemon на одном устройсве и file daemon на втором
 
-adminstd@kmsserver ~ $ sn /etc/bacula/bacula-dir.conf 
-
-<details><summary>тык</summary>
-
-```bash
-Director {                            # define myself
-  Name = bacula-dir
-  DIRport = 9101                # where we listen for UA connections
-  
-  # путь к сценарию, содержащему sql запросы для работы с Bacula Catalog
-  QueryFile = "/etc/bacula/scripts/query.sql"
-
-  # папка в которой лежат статус-файлы Директора
-  WorkingDirectory = "/var/lib/bacula"
-  
-  # pid-файл демона Директора
-  PidDirectory = "/run/bacula"
-  
-  # Максимальное количество выполняемых заданий.
-  # (не рекомендуется одновременно запускать более одного задания)
-  Maximum Concurrent Jobs = 1
-  Password = "1"         # Console password
-  Messages = Daemon
-  DirAddress = 192.168.122.13
-}
-
-JobDefs {
-  Name = "DefaultJob"
-  Type = Backup
-  Level = Incremental
-  Client = kmsserver-fd
-  FileSet = "Full Set"
-  Schedule = "WeeklyCycle"
-  Storage = File1
-  Messages = Standard
-  Pool = File
-  SpoolAttributes = yes
-  Priority = 10
-  Write Bootstrap = "/var/lib/bacula/%c.bsr"
-}
-
-Job {
-  Name = "BackupClient1"
-  # тип задания
-  Type = Backup
-  Client = bacula-fd
-  FileSet = "Catalog"
-  Schedule = "DalyCycle"
-  Messages = Standard
-  Pool = Default
-  Write Bootstrab="var/lib/bacula/%n.bsr"
-  Priority = 1
-}
-
-Job {
-  Name = "RestoreFiles"
-  Type = Restore
-  Client = bacula-fd
-  FileSet ="Catalog"
-  Storage = File
-  Pool = Default
-  Messages = Standard
-  Where = /home2
-}
-
-
-# Backup the catalog database (after the nightly save)
-Job {
-  Name = "BackupCatalog"
-  JobDefs = "DefaultJob"
-  Level = Full
-  FileSet="Catalog"
-  Schedule = "WeeklyCycleAfterBackup"
-  # This creates an ASCII copy of the catalog
-  # Arguments to make_catalog_backup.pl are:
-  #  make_catalog_backup.pl <catalog-name>
-  RunBeforeJob = "/etc/bacula/scripts/make_catalog_backup.pl MyCatalog"
-  # This deletes the copy of the catalog
-  RunAfterJob  = "/etc/bacula/scripts/delete_catalog_backup"
-  Write Bootstrap = "/var/lib/bacula/%n.bsr"
-  Priority = 11                   # run after main backup
-}
-
-# List of files to be backed up
-FileSet {
-  Name = "Catalog"
-  Include {
-    Options {
-      signature = MD5
-      compression = GZIP
-      aclsupport = yes
-      xattrsupport = yes
-    }
-  File = /home
-  }
-
-  Exclude {
-    File = /var/lib/bacula
-    File = /nonexistant/path/to/file/archive/dir
-    File = /proc
-    File = /tmp
-    File = /sys
-    File = /.journal
-    File = /.fsck
-  }
-}
-
-#
-# When to do the backups, full backup on first sunday of the month,
-#  differential (i.e. incremental since full) every other sunday,
-#  and incremental backups other days
-Schedule {
-  Name = "WeeklyCycle"
-  Run = Full 1st sun at 23:05
-  Run = Differential 2nd-5th sun at 23:05
-  Run = Incremental mon-sat at 23:05
-}
-
-# This schedule does the catalog. It starts after the WeeklyCycle
-Schedule {
-  Name = "WeeklyCycleAfterBackup"
-  Run = Full sun-sat at 23:10
-}
-
-# Client (File Services) to backup
-Client {
-  Name = bacula-fd
-  Address = 192.168.122.14
-  FDPort = 9102
-  Catalog = MyCatalog
-  Password = "1"          # password for FileDaemon
-  File Retention = 30 days            # 30 days
-  Job Retention = 6 months            # six months
-  AutoPrune = yes                     # Prune expired Jobs/Files
-}
-
-Storage {
-  Name = File
-  Address = 10.0.0.24
-  SDPort = 9103
-  Password = "1"
-  Device = FileStorage
-  Media Type = File
-}
-
-# Definition of file Virtual Autochanger device
-Autochanger {
-  Name = File1
-# Do not use "localhost" here
-  Address = localhost                # N.B. Use a fully qualified name here
-  SDPort = 9103
-  Password = "xOAAcsWJ2uLR7-CgIkiWkqr3Lem8CklOS"
-  Device = FileChgr1
-  Media Type = File1
-  Maximum Concurrent Jobs = 10        # run up to 10 jobs a the same time
-  Autochanger = File1                 # point to ourself
-}
-
-# Definition of a second file Virtual Autochanger device
-#   Possibly pointing to a different disk drive
-Autochanger {
-  Name = File2
-# Do not use "localhost" here
-  Address = localhost                # N.B. Use a fully qualified name here
-  SDPort = 9103
-  Password = "xOAAcsWJ2uLR7-CgIkiWkqr3Lem8CklOS"
-  Device = FileChgr2
-  Media Type = File2
-  Autochanger = File2                 # point to ourself
-  Maximum Concurrent Jobs = 10        # run up to 10 jobs a the same time
-}
-
-# Generic catalog service
-Catalog {
-  Name = MyCatalog
-  dbname = "bacula"; DB Address = "10.0.0.23"; dbuser = "bacula"; dbpassword = "bacula"
-}
-
-# Reasonable message delivery -- send most everything to email address
-#  and to the console
-Messages {
-  Name = Standard
-  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: %t %e of %c %l\" %r"
-  operatorcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula: Intervention needed for %j\" %r"
-  mail = root = all, !skipped
-  operator = root = mount
-  console = all, !skipped, !saved
-  append = "/var/log/bacula/bacula.log" = all, !skipped
-  catalog = all
-}
-
-
-# Message delivery for daemon messages (no job).
-Messages {
-  Name = Daemon
-  mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula daemon message\" %r"
-  mail = root = all, !skipped
-  console = all, !skipped, !saved
-  append = "/var/log/bacula/bacula.log" = all, !skipped
-}
-
-# Default pool definition
-Pool {
-  Name = Default
-  Pool Type = Backup
-  Recycle = yes                       # Bacula can automatically recycle Volumes
-  AutoPrune = yes                     # Prune expired volumes
-  Volume Retention = 365 days         # one year
-  Maximum Volume Bytes = 50G          # Limit Volume size to something reasonable
-  Maximum Volumes = 100               # Limit number of Volumes in Pool
-}
-
-# File Pool definition
-Pool {
-  Name = File
-  Pool Type = Backup
-  Recycle = yes                       # Bacula can automatically recycle Volumes
-  AutoPrune = yes                     # Prune expired volumes
-  Volume Retention = 365 days         # one year
-  Maximum Volume Bytes = 50G          # Limit Volume size to something reasonable
-  Maximum Volumes = 100               # Limit number of Volumes in Pool
-  Label Format = "Vol-"               # Auto label
-}
-
-
-# Scratch pool definition
-Pool {
-  Name = Scratch
-  Pool Type = Backup
-}
-
-#
-# Restricted console used by tray-monitor to get the status of the director
-#
-Console {
-  Name = bacula-mon
-  Password = "1"
-  CommandACL = status, .status
-}
-```
-
-</details>
 
 ## 4. Настроить доступ к коснсоли (это производится в bconsole.conf на каждом устройстве)
 
