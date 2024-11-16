@@ -519,7 +519,7 @@ Messages {
 ```
 
 
-№№№Создание папок в которых будет храниться бекап
+### Создание папок в которых будет храниться бекап
 
 adminstd@kmsserver ~ $ `sudo mkdir -p /backups/files1/`
 
@@ -528,18 +528,15 @@ adminstd@kmsserver ~ $ `sudo chmod 755 /backups/files1/`
 adminstd@kmsserver ~ $ `sudo chown bacula:bacula /backups/files1/`
 
 
-```bash
-
-```
-
 Присвоение необходимых прав созданному файлу и назначение ему владельца (chmod and chown on file)
 
-adminstd@kmsserver ~ $ sudo chmod 644 /etc/bacula/bacula-sd.conf
-adminstd@kmsserver ~ $ sudo chown root:bacula /etc/bacula/bacula-sd.conf
+adminstd@kmsserver ~ $ `sudo chmod 644 /etc/bacula/bacula-sd.conf`
 
-adminstd@kmsserver ~ $ sudo systemctl restart bacula-sd.service
+adminstd@kmsserver ~ $ `sudo chown root:bacula /etc/bacula/bacula-sd.conf`
 
-adminstd@kmsserver ~ $ sudo journalctl -xe
+adminstd@kmsserver ~ $ `sudo systemctl restart bacula-sd.service`
+
+adminstd@kmsserver ~ $ `sudo journalctl -xe`
 
 
 Bacula FileDaemon (клиент): настройка
